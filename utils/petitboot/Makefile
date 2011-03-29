@@ -71,6 +71,12 @@ petitboot-install-autorun-$(CONFIG_PETITBOOT_AUTORUN_CUI) = \
 petitboot-install-autorun-$(CONFIG_PETITBOOT_AUTORUN_GUI) = \
 	ln -sf pb-twin $(1)/usr/sbin/petitboot
 
+petitboot-install-extra-data-$(CONFIG_PETITBOOT_GUI) = 				\
+	$(INSTALL_DIR) $(1)/usr/share/petitboot/				\
+	$(INSTALL_DATA) 							\
+		$(addprefix $(PKG_INSTALL_DIR),$(petitboot-extra-data-y)) 	\
+		$(1)/usr/share/petitboot/
+
 CONFIGURE_ARGS += $(petitboot-config-args-y) \
 	PACKAGE_VERSION=$(shell echo ${HOSTNAME})-$(shell date +%y.%m.%d-%H.%M)
 
@@ -89,10 +95,7 @@ define Package/petitboot/install
 		$(PKG_INSTALL_DIR)/usr/sbin/pb-event \
 		$(1)/usr/sbin/
 
-	$(INSTALL_DIR) $(1)/usr/share/petitboot/
-	$(INSTALL_DATA) \
-		$(addprefix $(PKG_INSTALL_DIR),$(petitboot-extra-data-y)) \
-		$(1)/usr/share/petitboot/
+	$(petitboot-install-extra-data-y)
 
 	$(INSTALL_DIR) $(1)/etc/udev/rules.d
 	$(INSTALL_DATA) \
